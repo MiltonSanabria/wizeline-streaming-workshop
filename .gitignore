@@ -12,3 +12,10 @@ project/plugins/project/
 ### Scala ###
 *.class
 *.log
+
+### sesssion 1 files ###
+
+session-1/.DS_Store
+session-1/intro/.DS_Store
+session-1/intro/src/.DS_Store
+session-1/intro/src/main/.DS_Store
