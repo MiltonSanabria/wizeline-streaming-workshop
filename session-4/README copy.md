@@ -1,1 +1,0 @@
-# wizeline-streaming-workshop
