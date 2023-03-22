@@ -13,16 +13,14 @@ object StreamingWatermarking {
 
     spark.sparkContext.setLogLevel("ERROR")
 
-    // We are going to listen to the following host and port
-    val host = "127.0.0.1"
-    val port = "9999"
 
-    // Create Streaming DataFrame by reading data from socket.
+    // Create Streaming DataFrame by reading data from kafka topic.
     val initDF = spark
       .readStream
-      .format("socket")
-      .option("host", host)
-      .option("port", port)
+      .format("kafka")
+      .option("kafka.bootstrap.servers", "172.18.0.4:9092")
+      .option("subscribe", "data_streaming")
+      .option("startingOffsets", "earliest")
       .load()
 
     // Create DataFrame  with event_timestamp and val column
