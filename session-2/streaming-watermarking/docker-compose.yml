@@ -8,7 +8,6 @@ networks:
       config:
         - subnet: "172.18.0.0/16"
 
-
 services:
   spark:
     image: docker.io/bitnami/spark:3
@@ -30,7 +29,6 @@ services:
     networks:
       datapipeline:
         ipv4_address: 172.18.0.2
-
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     container_name: zookeeper
@@ -42,7 +40,6 @@ services:
     networks:
       datapipeline:
         ipv4_address: 172.18.0.3
-
   kafka:
     image: 'wurstmeister/kafka:latest'
     container_name: kafka
