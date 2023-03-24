@@ -39,7 +39,6 @@ object StreamingWatermarking {
 
 
     // Without watermarking
-
 //    val resultDF = eventDF
 //      .groupBy(window(col("event_time"), "5 minute"), eventDF.col("name"))
 //      .agg(sum("count").as("sum"))
