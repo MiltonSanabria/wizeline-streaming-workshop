@@ -1,6 +1,7 @@
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.Trigger
+import org.apache.spark.sql.types.{IntegerType, StringType, StructType, TimestampType}
 
 object StreamingWatermarking {
   def main(args: Array[String]): Unit = {
@@ -13,37 +14,40 @@ object StreamingWatermarking {
 
     spark.sparkContext.setLogLevel("ERROR")
 
-    // We are going to listen to the following host and port
-    val host = "127.0.0.1"
-    val port = "9999"
 
-    // Create Streaming DataFrame by reading data from socket.
+    // Create Streaming DataFrame by reading data from kafka topic.
     val initDF = spark
       .readStream
-      .format("socket")
-      .option("host", host)
-      .option("port", port)
+      .format("kafka")
+      .option("kafka.bootstrap.servers", "localhost:9092")
+      .option("subscribe", "data_streaming")
+      .option("startingOffsets", "earliest")
       .load()
 
+    // Define schema for kafka message
+    val schema = new StructType()
+      .add("event_time", TimestampType)
+      .add("name", StringType)
+      .add("count", IntegerType)
+
+
+
     // Create DataFrame  with event_timestamp and val column
-    val eventDF = initDF.select(split(col("value"), "#").as("data"))
-      .withColumn("event_timestamp", element_at(col("data"), 1).cast("timestamp"))
-      .withColumn("val", element_at(col("data"), 2).cast("int"))
-      .drop("data")
+    val eventDF = initDF.selectExpr("CAST(value AS STRING)")
+      .select(from_json(col("value"),schema).as("data")).select("data.*")
+
 
 
     // Without watermarking
-    /*
-    val resultDF = eventDF
-      .groupBy(window(col("event_timestamp"), "5 minute"))
-      .agg(sum("val").as("sum"))
-    */
+//    val resultDF = eventDF
+//      .groupBy(window(col("event_time"), "5 minute"), eventDF.col("name"))
+//      .agg(sum("count").as("sum"))
 
-
+    // Using watermark
     val resultDF = eventDF
-      .withWatermark("event_timestamp", "10 minutes")
-      .groupBy(window(col("event_timestamp"), "5 minute"))
-      .agg(sum("val").as("sum"))
+      .withWatermark("event_time", "10 minutes")
+      .groupBy(window(eventDF.col("event_time"), "5 minute"), eventDF.col("name"))
+      .agg(sum("count").as("sum"))
 
 
     // Write dataframe to console
