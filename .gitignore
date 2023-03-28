@@ -8,6 +8,7 @@ project/plugins/project/
 .cache
 .lib/
 .DS_Store
+.idea
 
 ### Scala ###
 *.class
