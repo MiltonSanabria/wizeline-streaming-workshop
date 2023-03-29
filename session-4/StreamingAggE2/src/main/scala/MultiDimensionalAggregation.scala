@@ -15,6 +15,7 @@ object MultiDimensionalAggregation {
 
     spark.sparkContext.setLogLevel("ERROR")
 
+    /*
     val sales = Seq(
       ("Warsaw", 2016, 100),
       ("Warsaw", 2017, 200),
@@ -90,11 +91,8 @@ object MultiDimensionalAggregation {
       .sort($"city".desc_nulls_last, $"year".asc_nulls_last)
 
     q.show
+  */
 
-
-
-
-    /*
     val schema = StructType(Seq(
       StructField("transaction_id", LongType, true),
       StructField("card_id", StringType, true),
@@ -130,7 +128,7 @@ object MultiDimensionalAggregation {
       .start()
       .awaitTermination()
 
-     */
+
   }
 
 }
